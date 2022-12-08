@@ -34,9 +34,32 @@ public class Client {
 
     final Scanner sc = new Scanner(System.in);
   
+    public Client(Principale principale,Socket soc) {
+        setPrincipale(principale);
+        this.setSocket(soc);
+    }
+
     public Client(Principale principale) {
         setPrincipale(principale);
-     
+    }
+
+    public void setChangement(){
+        try {
+            this.out = new PrintWriter(this.getSocket().getOutputStream());
+            InputStreamReader rin = new InputStreamReader(this.getSocket().getInputStream());
+            this.in = new BufferedReader(rin);     
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setSocket(Socket a){
+        this.clientSocket = a;
+        this.setChangement();
+    }
+    public Socket getSocket(){
+        return this.clientSocket;
     }
 
     public String getNom() {
@@ -55,21 +78,18 @@ public class Client {
         this.principale = principale;
     }
     
-    public void conect() {
+    public static Socket conect() throws Exception {
         try {
             /*
              *les informations du serveur (port et adresse IP ou nom d'hote)
              *127.0.0.1 est l'adresse local de la machine 
              */    
-            clientSocket = new Socket("127.0.0.1",5000);
-            //flux pour envoyer
-            out = new PrintWriter(clientSocket.getOutputStream());
-            //flux pour recevoir
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            Socket s = new Socket("127.0.0.1",5000);
+            return s;
         } catch (IOException e) {
             e.printStackTrace();
+            throw e ;
         }
-
     }
     public String SetNomClient() {
         String name = getNom();
@@ -80,19 +100,9 @@ public class Client {
     }
     
     public void Send() {
-            Thread envoyer = new Thread(new Runnable() {
-                String msg = getIndex().getZone_de_message().getText();
-                @Override
-                public void run() {
-                    while(true) {
-                        msg = sc.nextLine();
-                        out.println(msg);
-                        out.flush();
-                    }
-                }
-            });     
-            envoyer.start();
-   
+        String msg = getIndex().getZone_de_message().getText();
+        out.println(msg);
+        out.flush();
     }
     
     public void Receive() {

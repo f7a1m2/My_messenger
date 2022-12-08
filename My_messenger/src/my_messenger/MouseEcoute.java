@@ -4,6 +4,7 @@
  */
 package my_messenger;
 
+import java.net.Socket;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -32,9 +33,17 @@ public class MouseEcoute implements MouseListener{
     public void mouseClicked(MouseEvent e) {
         if (getPrincipale() != null) {
             if (getPrincipale().getValidation() == e.getSource()) {
-                getPrincipale().getClient().conect();
-                getPrincipale().getClient().SetNomClient();
-                new Index(getPrincipale().getTextArea().getText());
+                try {
+                    Socket soc = getPrincipale().getClient().conect();
+                    getPrincipale().getClient().setSocket(soc);
+                    getPrincipale().getClient().SetNomClient();
+
+                    Index index = new Index(getPrincipale().getTextArea().getText(),soc);
+                    Thread multi = new Thread(index) ;
+                    multi.start();
+                }catch (Exception exc) {
+                    exc.printStackTrace();
+                }
             }
         }
     }

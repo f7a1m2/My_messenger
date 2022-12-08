@@ -4,6 +4,7 @@
  */
 package my_messenger;
 
+import java.net.Socket;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
@@ -12,13 +13,14 @@ import javax.swing.JTextArea;
  *
  * @author PC
  */
-public class Index extends javax.swing.JFrame {
+public class Index extends javax.swing.JFrame implements Runnable {
 
     /**
      * Creates new form Index
      */
     String nom ;
     Client client;
+    Socket clientSocket;
     Principale principale;
     JButton send_message ;
     JLabel nom_utilisateur;
@@ -73,19 +75,23 @@ public class Index extends javax.swing.JFrame {
         this.nom = nom;
     }
 
-    public Index(String Nom) {
+    public Index(String Nom,Socket soc) {
         setNom(Nom);
-        setClient(new Client(principale));
+        setClient(new Client(principale,soc));
         getClient().setIndex(this);
 
         initComponents();
-        this.setVisible(true);
         // System.out.println(jLabel1);
         setNom_utilisateur(jLabel2);
         setMessage_envoyer(Message_send);
         setZone_de_message(Message_sender);
         setSend_message(Button_send_message);
         getSend_message().addMouseListener(new IndexMListener(this));
+    }
+
+    public void run() {
+        this.setVisible(true);
+
     }
 
     public void Envoyer_message() {
@@ -215,7 +221,7 @@ public class Index extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jLabel1.setText("Nom_utilisateur");
+        jLabel1.setText(getNom()+ " " + "Connecte(e)");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
